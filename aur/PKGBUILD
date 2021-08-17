@@ -1,12 +1,12 @@
 _gitname=lock
 pkgname=lock-git
-pkgver=r1.a44df26
+pkgver=r2.66df5ff
 pkgrel=1
 pkgdesc="Simple, minimal lockscreen"
 arch=('i686' 'x86_64')
 url="https://github.com/ricksdomein/lock"
 license=('GPL3')
-depends=('imagemagick' 'i3lock')
+depends=('imagemagick' 'i3lock' 'scrot')
 makedepends=('git')
 provides=('lock')
 source=("git+https://github.com/ricksdomein/$_gitname.git")
