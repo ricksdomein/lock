@@ -1,6 +1,6 @@
 _gitname=lock
 pkgname=lock-git
-pkgver=r2.66df5ff
+pkgver=r3.a0ec4d4
 pkgrel=1
 pkgdesc="Simple, minimal lockscreen"
 arch=('i686' 'x86_64')

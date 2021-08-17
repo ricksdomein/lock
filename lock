@@ -25,10 +25,10 @@ done
 #Image paths
 if [ "$arg_image" ]; then
 	BKG_IMG="$arg_image" # Passed image
-elif [ -f "/usr/share/lock/img/background.png" ]; then
-	BKG_IMG="/usr/share/lock/img/background.png" # Default image
-else
-	BKG_IMG="$(dirname "$BASH_SOURCE")/img/background.png" # Fallback to current folder
+#elif [ -f "/usr/share/lock/img/background.png" ]; then
+#	BKG_IMG="/usr/share/lock/img/background.png" # Default image
+#else
+#	BKG_IMG="$(dirname "$BASH_SOURCE")/img/background.png" # Fallback to current folder
 fi
 
 if ! [ -e "$BKG_IMG" ]; then
@@ -51,33 +51,33 @@ else
 fi
 LOCK_CMD="$LOCK_BASE_CMD $LOCK_ARGS"
 
+color=$(convert "$OUTPUT_IMG" -gravity SouthWest -crop 100x100+0+0 +repage -colorspace hsb \
+	-resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}')
+if [[ $color -gt 60 ]]; then #white background image and black text
+	bw="black"
+	icon="/usr/share/lock/icons/circlelockdark.png"
+	param=("--insidecolor=0000001c" "--ringcolor=0000003e"
+		"--linecolor=00000000" "--keyhlcolor=ffffff80" "--ringvercolor=ffffff00"
+		"--separatorcolor=22222260" "--insidevercolor=ffffff1c"
+		"--ringwrongcolor=ffffff55" "--insidewrongcolor=ffffff1c"
+		"--verifcolor=ffffff00" "--wrongcolor=ff000000" "--timecolor=ffffff00"
+		"--datecolor=ffffff00" "--layoutcolor=ffffff00"
+		"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
+else #black
+	bw="white"
+	icon="/usr/share/lock/icons/circlelock.png"
+	param=("--insidecolor=ffffff1c" "--ringcolor=ffffff3e"
+		"--linecolor=ffffff00" "--keyhlcolor=00000080" "--ringvercolor=00000000"
+		"--separatorcolor=22222260" "--insidevercolor=0000001c"
+		"--ringwrongcolor=00000055" "--insidewrongcolor=0000001c"
+		"--verifcolor=00000000" "--wrongcolor=ff000000" "--timecolor=00000000"
+		"--datecolor=00000000" "--layoutcolor=00000000"
+		"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
+fi
+
+
 if [ -e $OUTPUT_IMG ]; then
 	# Lock screen since image already exists
-
-	color=$(convert "$OUTPUT_IMG" -gravity SouthWest -crop 100x100+0+0 +repage -colorspace hsb \
-		-resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}')
-
-	if [[ $color -gt 60 ]]; then #white background image and black text
-		bw="black"
-		icon="/usr/share/lock/icons/circlelockdark.png"
-		param=("--insidecolor=0000001c" "--ringcolor=0000003e"
-			"--linecolor=00000000" "--keyhlcolor=ffffff80" "--ringvercolor=ffffff00"
-			"--separatorcolor=22222260" "--insidevercolor=ffffff1c"
-			"--ringwrongcolor=ffffff55" "--insidewrongcolor=ffffff1c"
-			"--verifcolor=ffffff00" "--wrongcolor=ff000000" "--timecolor=ffffff00"
-			"--datecolor=ffffff00" "--layoutcolor=ffffff00"
-			"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
-	else #black
-		bw="white"
-		icon="/usr/share/lock/icons/circlelock.png"
-		param=("--insidecolor=ffffff1c" "--ringcolor=ffffff3e"
-			"--linecolor=ffffff00" "--keyhlcolor=00000080" "--ringvercolor=00000000"
-			"--separatorcolor=22222260" "--insidevercolor=0000001c"
-			"--ringwrongcolor=00000055" "--insidewrongcolor=0000001c"
-			"--verifcolor=00000000" "--wrongcolor=ff000000" "--timecolor=00000000"
-			"--datecolor=00000000" "--layoutcolor=00000000"
-			"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
-	fi
 	$LOCK_CMD ${param[@]}
 	exit 0
 fi
@@ -103,31 +103,7 @@ while read LINE; do
 		if (($OUTPUT_IMG_WIDTH < $SCREEN_WIDTH + $SCREEN_X)); then OUTPUT_IMG_WIDTH=$(($SCREEN_WIDTH + $SCREEN_X)); fi
 		if (($OUTPUT_IMG_HEIGHT < $SCREEN_HEIGHT + $SCREEN_Y)); then OUTPUT_IMG_HEIGHT=$(($SCREEN_HEIGHT + $SCREEN_Y)); fi
 
-		color=$(convert "$CACHE_IMG" -gravity SouthWest -crop 100x100+0+0 +repage -colorspace hsb \
-			-resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}')
-
-		if [[ $color -gt 60 ]]; then #white background image and black text
-			bw="black"
-			icon="/usr/share/lock/icons/circlelockdark.png"
-			param=("--insidecolor=0000001c" "--ringcolor=0000003e"
-				"--linecolor=00000000" "--keyhlcolor=ffffff80" "--ringvercolor=ffffff00"
-				"--separatorcolor=22222260" "--insidevercolor=ffffff1c"
-				"--ringwrongcolor=ffffff55" "--insidewrongcolor=ffffff1c"
-				"--verifcolor=ffffff00" "--wrongcolor=ff000000" "--timecolor=ffffff00"
-				"--datecolor=ffffff00" "--layoutcolor=ffffff00"
-				"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
-		else #black
-			bw="white"
-			icon="/usr/share/lock/icons/circlelock.png"
-			param=("--insidecolor=ffffff1c" "--ringcolor=ffffff3e"
-				"--linecolor=ffffff00" "--keyhlcolor=00000080" "--ringvercolor=00000000"
-				"--separatorcolor=22222260" "--insidevercolor=0000001c"
-				"--ringwrongcolor=00000055" "--insidewrongcolor=0000001c"
-				"--verifcolor=00000000" "--wrongcolor=ff000000" "--timecolor=00000000"
-				"--datecolor=00000000" "--layoutcolor=00000000"
-				"--indpos=x+65:h-68" "--radius=20" "--ring-width=4")
-		fi
-
+		# Add lock text and icon
 		convert "$CACHE_IMG" -pointsize 17 -fill "$bw" -gravity SouthWest -annotate +100+58 "Type password to unlock" "$CACHE_IMG"
 		convert "$CACHE_IMG" "$icon" -gravity SouthWest -geometry +45+48 -composite "$CACHE_IMG"
 
