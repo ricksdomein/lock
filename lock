@@ -3,18 +3,26 @@
 #Constants
 DISPLAY_RE="([0-9]+)x([0-9]+)\\+([0-9]+)\\+([0-9]+)" # Regex to find display dimensions
 CACHE_FOLDER="$HOME"/.cache/lock/img/                # Cache folder
+font=$(convert -list font | awk "{ a[NR] = \$2 } /family: $(fc-match sans -f "%{family}\n")/ { print a[NR-1]; exit }")
+text="Type password to unlock"
 if ! [ -e $CACHE_FOLDER ]; then
 	mkdir -p $CACHE_FOLDER
 fi
 
 #Passed arguments
-while getopts ":i:a:" opt; do
+while getopts ":i:a:f:t:" opt; do
 	case $opt in
 	i)
 		arg_image="$OPTARG"
 		;;
 	a)
 		lock_args="$OPTARG"
+		;;
+	f)
+		font="$OPTARG"
+		;;
+	t)
+		text="$OPTARG"
 		;;
 	\?)
 		echo "Invalid option -$OPTARG" >&2 && exit 1
@@ -104,7 +112,7 @@ while read LINE; do
 		if (($OUTPUT_IMG_HEIGHT < $SCREEN_HEIGHT + $SCREEN_Y)); then OUTPUT_IMG_HEIGHT=$(($SCREEN_HEIGHT + $SCREEN_Y)); fi
 
 		# Add lock text and icon
-		convert "$CACHE_IMG" -pointsize 17 -fill "$bw" -gravity SouthWest -annotate +100+58 "Type password to unlock" "$CACHE_IMG"
+		convert "$CACHE_IMG" -font "$font" -pointsize 17 -fill "$bw" -gravity SouthWest -annotate +100+58 "$text" "$CACHE_IMG"
 		convert "$CACHE_IMG" "$icon" -gravity SouthWest -geometry +45+48 -composite "$CACHE_IMG"
 
 		PARAMS="$PARAMS -type TrueColor $CACHE_IMG -geometry +$SCREEN_X+$SCREEN_Y -composite "
@@ -117,3 +125,4 @@ eval convert $OUTPUT_IMG $PARAMS $OUTPUT_IMG
 
 #Lock the screen:
 $LOCK_CMD ${param[@]}
+#lockup -f Ubuntu -i $HOME/Pictures/wallpapers/arch.png
