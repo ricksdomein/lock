@@ -1,0 +1,23 @@
+_gitname=lock
+pkgname=lock-git
+pkgver=r1.a44df26
+pkgrel=1
+pkgdesc="Simple, minimal lockscreen"
+arch=('i686' 'x86_64')
+url="https://github.com/ricksdomein/lock"
+license=('GPL3')
+depends=('imagemagick' 'i3lock')
+makedepends=('git')
+provides=('lock')
+source=("git+https://github.com/ricksdomein/$_gitname.git")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$_gitname"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+    cd "${srcdir}/$_gitname"
+    DESTDIR="$pkgdir" make install
+}
