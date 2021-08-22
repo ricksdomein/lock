@@ -8,3 +8,5 @@ It uses [ImageMagick](http://www.imagemagick.org/) to resize the [background ima
 By using information from [xrandr](http://www.x.org/wiki/Projects/XRandR/) and basic math, this script supports multiple monitor setups, displaying the background image on all screens.
 
 It caches the generated image for different screen sizes and xrandr output. So even though first `lock` command will take a second to finish, subsequent `lock` will be lighting fast.
+
+![Screenshot](./Example.png)
