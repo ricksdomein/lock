@@ -9,4 +9,4 @@ By using information from [xrandr](http://www.x.org/wiki/Projects/XRandR/) and b
 
 It caches the generated image for different screen sizes and xrandr output. So even though first `lock` command will take a second to finish, subsequent `lock` will be lighting fast.
 
-![Screenshot](./Example.png)
+![Screenshot](./example.png)
